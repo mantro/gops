@@ -32,14 +32,6 @@ type viewmodel struct {
 	Data dictionary
 }
 
-func relPath(parent string, child string) string {
-
-	if len(child) <= len(parent) {
-		panic("Child path cannot be shorter that parent path")
-	}
-	return "." + child[len(parent):]
-}
-
 func generateViewModel() (vm viewmodel) {
 	path, err := os.Getwd()
 	if err != nil {
@@ -70,7 +62,7 @@ func generateConfig(vm *viewmodel) {
 
 	directories, err := ioutil.ReadDir(vm.Meta.ConfigDirectory)
 	if err != nil {
-		logger.Error("Cannot iterate " + relPath(vm.Meta.RootDirectory, vm.Meta.ConfigDirectory))
+		logger.Error("Cannot iterate " + RelPath(vm.Meta.RootDirectory, vm.Meta.ConfigDirectory))
 		os.Exit(1)
 	}
 
@@ -87,7 +79,7 @@ func generateConfig(vm *viewmodel) {
 
 func templateFile(file string, vm viewmodel) {
 
-	relativeFile := relPath(vm.Meta.RootDirectory, file)
+	relativeFile := RelPath(vm.Meta.RootDirectory, file)
 	logger.Info("Templating " + relativeFile)
 
 	info, err := os.Stat(file)

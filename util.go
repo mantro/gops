@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+func RelPath(parent string, child string) string {
+
+	if len(child) <= len(parent) {
+		panic("Child path cannot be shorter that parent path")
+	}
+	return "." + child[len(parent):]
+}
+
 func Glob(root string, extension string) []string {
 
 	var files []string
