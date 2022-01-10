@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
 	"go.uber.org/zap"
@@ -62,7 +63,7 @@ func generateConfig(vm *viewmodel) {
 
 	directories, err := ioutil.ReadDir(vm.Meta.ConfigDirectory)
 	if err != nil {
-		logger.Error("Cannot iterate " + RelPath(vm.Meta.RootDirectory, vm.Meta.ConfigDirectory))
+		logger.Error("Directory does not exist:  " + RelPath(vm.Meta.RootDirectory, vm.Meta.ConfigDirectory))
 		os.Exit(1)
 	}
 
@@ -127,6 +128,13 @@ func main() {
 		for _, file := range files {
 			templateFile(file, vm)
 		}
+	case "json":
+
+		result, _ := json.MarshalIndent(vm, "", "  ")
+		fmt.Println(string(result))
+
+	case "help":
+		fmt.Println("Available commands: config templates help json")
 
 	default:
 		fmt.Println("Unknown command", command)

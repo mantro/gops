@@ -1,0 +1,1 @@
+Go variation of bashops
