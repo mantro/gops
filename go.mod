@@ -1,4 +1,4 @@
-module goops
+module github.com/mantro/goops
 
 go 1.17
 
