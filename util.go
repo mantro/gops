@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/imdario/mergo"
+	"github.com/sirupsen/logrus"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"sigs.k8s.io/yaml"
@@ -22,47 +24,62 @@ func Glob(root string, extension string) []string {
 
 	var files []string
 
-	filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
+	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
 		if strings.Contains(s, extension) {
 			files = append(files, s)
 		}
 		return nil
 	})
 
+	if err != nil {
+		logrus.Error("Cannot enumerate " + root + " for files with " + extension)
+		panic(err)
+	}
+
 	return files
 }
 
-func LoadYamlFile(file string) (result dictionary, err error) {
+func LoadYamlFile(file string) (result Dictionary, err error) {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
 
-	yamlData := dictionary{}
+	yamlData := Dictionary{}
 	err = yaml.Unmarshal(data, &yamlData)
 
 	return yamlData, nil
 }
 
-func LoadYamlFiles(files ...string) (result dictionary) {
+func LoadYamlFiles(files ...string) (result Dictionary) {
 
-	merge := dictionary{}
+	merge := Dictionary{}
 
 	for _, file := range files {
 		contents, _ := LoadYamlFile(file)
-		mergo.Merge(&merge, contents)
+		if err := mergo.Merge(&merge, contents); err != nil {
+			logrus.Error("Cannot merge yaml file " + file)
+			panic(err)
+		}
 	}
 
 	return merge
 }
 
-func GetGitRoot(searchRoot string) (string, error) {
+func GetGitRoot() (string, string, error) {
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic("Cannot get current directory")
+	}
+
 	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	cmd.Dir = searchRoot
+	cmd.Dir = cwd
 
 	path, err := cmd.Output()
 	if err != nil {
-		return "", err
+		return "", cwd, err
 	}
-	return strings.TrimSpace(string(path)), nil
+
+	return strings.TrimSpace(string(path)), cwd, nil
 }
