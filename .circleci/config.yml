@@ -38,6 +38,19 @@ jobs:
           paths:
             - "/go/pkg/mod"
 
+      - run:
+          name: generate multi platform binaries
+          command: |
+            mkdir binaries
+            GOOS="darwin" GOARCH="amd64" go build -o binaries/goops.darwin.amd64
+            GOOS="darwin" GOARCH="arm64" go build -o binaries/goops.darwin.arm64
+            GOOS="linux" GOARCH="amd64" go build -o binaries/goops.linux.amd64
+            GOOS="linux" GOARCH="arm64" go build -o binaries/goops.linux.arm64
+
+      - store_artifacts:
+          path: binaries
+          destination: binaries
+
       - store_artifacts:
           path: /tmp/test-results
           destination: raw-test-output
