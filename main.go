@@ -31,7 +31,7 @@ func main() {
 		fmt.Println(string(output))
 
 	case "help":
-		fmt.Println("Available commands: config dump init help target templates")
+		fmt.Println("Available commands: config dump help target templates")
 
 	case "target":
 
