@@ -15,3 +15,28 @@ func TestRelPath(t *testing.T) {
 		t.Fatalf("RelPath(%q, %q) should be %q, but is %q", parentPath, subPath, expected, result)
 	}
 }
+
+func TestSliceContains(t *testing.T) {
+
+	slice1 := []string{"One", "Two", "Three"}
+
+	if !SliceContains(slice1, "One") {
+		t.Fatalf("001")
+	}
+
+	if !SliceContains(slice1, "Two") {
+		t.Fatalf("001")
+	}
+
+	if !SliceContains(slice1, "Three") {
+		t.Fatalf("001")
+	}
+
+	if SliceContains(slice1, "Four") {
+		t.Fatalf("001")
+	}
+
+	if SliceContains(slice1, "") {
+		t.Fatalf("001")
+	}
+}
