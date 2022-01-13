@@ -66,6 +66,16 @@ func LoadYamlFiles(files ...string) (result Dictionary) {
 	return merge
 }
 
+func SliceContains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func GetGitRoot() (string, string, error) {
 
 	cwd, err := os.Getwd()
