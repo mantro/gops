@@ -12,35 +12,37 @@ jobs:
       - checkout
       - run: mkdir -p $TEST_RESULTS
 
+      # TODO: apparently one of the steps modifies the checksum during the steps. any clue?
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
 
       - run:
-          name: go get
+          name: go mod verify
           command: |
-            go get
+            go mod verify
 
       - run:
           name: go build
           command: |
-            go build
+            go build -v ./...
 
       - run:
-          name: go test
+          name: gotestsum
           command: |
-            go test
+            PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
+            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- $PACKAGE_NAMES
 
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
 
-      - store_artifacts: # upload test summary for display in Artifacts
+      - store_artifacts:
           path: /tmp/test-results
           destination: raw-test-output
 
-      - store_test_results: # upload test results for display in Test Summary
+      - store_test_results:
           path: /tmp/test-results
 workflows:
   version: 2
