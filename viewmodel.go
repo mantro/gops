@@ -153,6 +153,8 @@ func LoadAndMergeConfigDirectory(vm *ViewModel) {
 		logrus.Error("Cannot find target " + vm.Config.Target + " in merged configuration")
 		os.Exit(1)
 	}
+
+	logrus.Info("Current target: " + vm.Config.Target)
 }
 
 func ProcessTemplates(vm *ViewModel) {
