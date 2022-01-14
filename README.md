@@ -1,10 +1,17 @@
 Go variation of bashops
 
+## Installation
+
+```bash
+brew install golang
+./install.sh
+```
+
 ## gops vs goops?
 
 The project/binary is called `goops` (short for `go ops` or `go operations`)
 
-The global stub is called `gops` which I use mostly during development (the stub does compile `goops` every time before invoking).
+The global stub is installed as `gops` which I use mostly during development (the stub does compile `goops` every time before invoking).
 
 ## What does it do?
 
