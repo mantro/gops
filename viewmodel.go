@@ -110,7 +110,7 @@ func LoadGopsConfig(vm *ViewModel) {
 
 		vm.Meta.Target = string(contents)
 
-		targetPath := filepath.Join(vm.Config.ConfigDirectory, vm.Meta.Target)
+		targetPath := filepath.Join(vm.Meta.GitRoot, vm.Config.ConfigDirectory, vm.Meta.Target)
 		if _, err := os.Stat(targetPath); err != nil {
 			logrus.Error("Cannot find " + targetPath)
 			vm.Meta.Target = ""
@@ -129,16 +129,18 @@ func LoadAndMergeConfigDirectory(vm *ViewModel) {
 
 	vm.Data = Dictionary{}
 
-	directories, err := ioutil.ReadDir(vm.Config.ConfigDirectory)
+	configDirectory := filepath.Join(vm.Meta.GitRoot, vm.Config.ConfigDirectory)
+
+	directories, err := ioutil.ReadDir(configDirectory)
 	if err != nil {
-		logrus.Error("Directory does not exist:  " + RelPath(vm.Meta.GitRoot, vm.Config.ConfigDirectory))
+		logrus.Error("Directory does not exist:  " + RelPath(vm.Meta.GitRoot, configDirectory))
 		os.Exit(1)
 	}
 
 	for _, directory := range directories {
 		if directory.IsDir() {
 
-			files, _ := filepath.Glob(filepath.Join(vm.Config.ConfigDirectory, directory.Name(), "*.yaml"))
+			files, _ := filepath.Glob(filepath.Join(configDirectory, directory.Name(), "*.yaml"))
 			merged := LoadYamlFiles(files...)
 
 			vm.Data[directory.Name()] = merged

@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
-
-	"github.com/sirupsen/logrus"
+	"path/filepath"
 	"sigs.k8s.io/yaml"
 )
 
@@ -36,9 +36,10 @@ func main() {
 
 	case "target":
 
-		files, err := ioutil.ReadDir(vm.Config.ConfigDirectory)
+		configDirectory := filepath.Join(vm.Meta.GitRoot, vm.Config.ConfigDirectory)
+		files, err := ioutil.ReadDir(configDirectory)
 		if err != nil {
-			logrus.Error("Cannot enumerate " + vm.Config.ConfigDirectory)
+			logrus.Error("Cannot enumerate " + configDirectory)
 			panic(err)
 		}
 
