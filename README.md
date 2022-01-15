@@ -1,12 +1,17 @@
 Opinionated tool that helps with secrets / deployments.
 
+## Installation
+
+```console
+foo@bar:~$ brew tap mantro/gops
+foo@bar:~$ brew install gops
+```
+
 ## Development setup
 
-```bash
-brew install golang
-
-# this will install a global stub "gops" that compiles & runs the go project
-./install.sh
+```console
+foo@bar:~$ brew install golang
+foo@bar:~$ ./install.sh
 ```
 
 ## What does it do?
