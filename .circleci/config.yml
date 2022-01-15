@@ -42,10 +42,10 @@ jobs:
           name: generate multi platform binaries
           command: |
             mkdir binaries
-            GOOS="darwin" GOARCH="amd64" go build -o binaries/goops.darwin.amd64
-            GOOS="darwin" GOARCH="arm64" go build -o binaries/goops.darwin.arm64
-            GOOS="linux" GOARCH="amd64" go build -o binaries/goops.linux.amd64
-            GOOS="linux" GOARCH="arm64" go build -o binaries/goops.linux.arm64
+            GOOS="darwin" GOARCH="amd64" go build -o binaries/gops.darwin.amd64
+            GOOS="darwin" GOARCH="arm64" go build -o binaries/gops.darwin.arm64
+            GOOS="linux" GOARCH="amd64" go build -o binaries/gops.linux.amd64
+            GOOS="linux" GOARCH="arm64" go build -o binaries/gops.linux.arm64
 
       - store_artifacts:
           path: binaries

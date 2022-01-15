@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/CloudyKit/jet/v6"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sigs.k8s.io/yaml"
 	"strings"
+
+	"github.com/CloudyKit/jet/v6"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"sigs.k8s.io/yaml"
 )
 
 type Dictionary = map[string]interface{}
@@ -18,7 +19,7 @@ type Meta struct {
 	ConfigFilePath string
 }
 
-type GoopsConfig struct {
+type GopsConfig struct {
 	ConfigDirectory string
 	Target          string
 	DelimiterLeft   string
@@ -27,7 +28,7 @@ type GoopsConfig struct {
 
 type ViewModel struct {
 	Meta   Meta
-	Config GoopsConfig
+	Config GopsConfig
 	Data   Dictionary
 }
 
@@ -42,7 +43,7 @@ func CreateViewModel() (vm ViewModel) {
 	vm = ViewModel{}
 	vm.Meta = Meta{}
 	vm.Meta.GitRoot = gitRoot
-	vm.Meta.ConfigFilePath = filepath.Join(gitRoot, ".goops.yaml")
+	vm.Meta.ConfigFilePath = filepath.Join(gitRoot, ".gops.yaml")
 
 	return vm
 }
@@ -57,9 +58,9 @@ func setViperDefaults(vm *ViewModel) {
 	viper.SetConfigType("yaml")
 }
 
-func getViperConfig() GoopsConfig {
+func getViperConfig() GopsConfig {
 
-	return GoopsConfig{
+	return GopsConfig{
 		ConfigDirectory: viper.GetString("ConfigDirectory"),
 		Target:          viper.GetString("Target"),
 		DelimiterLeft:   viper.GetString("DelimiterLeft"),
@@ -67,7 +68,7 @@ func getViperConfig() GoopsConfig {
 	}
 }
 
-func WriteGoopsConfig(vm *ViewModel) {
+func WriteGopsConfig(vm *ViewModel) {
 	output, _ := yaml.Marshal(vm.Config)
 
 	if err := os.WriteFile(vm.Meta.ConfigFilePath, output, 0644); err != nil {
@@ -78,7 +79,7 @@ func WriteGoopsConfig(vm *ViewModel) {
 	logrus.Info("Written config to " + vm.Meta.ConfigFilePath)
 }
 
-func LoadGoopsConfig(vm *ViewModel) {
+func LoadGopsConfig(vm *ViewModel) {
 
 	setViperDefaults(vm)
 
@@ -93,7 +94,7 @@ func LoadGoopsConfig(vm *ViewModel) {
 
 	} else {
 		vm.Config = getViperConfig()
-		WriteGoopsConfig(vm)
+		WriteGopsConfig(vm)
 	}
 
 	contents := ""
@@ -101,13 +102,13 @@ func LoadGoopsConfig(vm *ViewModel) {
 	gitignorePath := filepath.Join(vm.Meta.GitRoot, ".gitignore")
 	if gitignore, err := os.ReadFile(gitignorePath); err != nil {
 		logrus.Warn(gitignorePath + " does not exist, creating..")
-		contents = ".goops.yaml"
+		contents = ".gops.yaml"
 	} else {
 		contents = string(gitignore)
 
-		if !strings.Contains(contents, ".goops.yaml") {
-			logrus.Info("Adding '.goops.yaml' to " + gitignorePath)
-			contents = contents + "\n.goops.yaml"
+		if !strings.Contains(contents, ".gops.yaml") {
+			logrus.Info("Adding '.gops.yaml' to " + gitignorePath)
+			contents = contents + "\n.gops.yaml"
 		}
 	}
 
@@ -120,7 +121,7 @@ func LoadGoopsConfig(vm *ViewModel) {
 func LoadAndMergeConfigDirectory(vm *ViewModel) {
 
 	if vm.Config.Target == "" {
-		logrus.Error("No target has been set, please invoke 'goops target' first")
+		logrus.Error("No target has been set, please invoke 'gops target' first")
 		os.Exit(1)
 	}
 

@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
+
+	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/yaml"
 )
 
@@ -18,7 +19,7 @@ func main() {
 	}
 
 	vm := CreateViewModel()
-	LoadGoopsConfig(&vm)
+	LoadGopsConfig(&vm)
 
 	switch command {
 	case "config":
@@ -52,7 +53,7 @@ func main() {
 				logrus.Error("Cannot find target: " + target)
 			} else {
 				vm.Config.Target = target
-				WriteGoopsConfig(&vm)
+				WriteGopsConfig(&vm)
 			}
 		}
 

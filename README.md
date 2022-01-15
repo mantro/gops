@@ -1,27 +1,23 @@
-Go variation of bashops
+Opinionated tool that helps with secrets / deployments.
 
-## Installation
+## Development setup
 
 ```bash
 brew install golang
+
+# this will install a global stub "gops" that compiles & runs the go project
 ./install.sh
 ```
 
-## gops vs goops?
-
-The project/binary is called `goops` (short for `go ops` or `go operations`)
-
-The global stub is installed as `gops` which I use mostly during development (the stub does compile `goops` every time before invoking).
-
 ## What does it do?
 
-On first time invocation `goops` will create a `<GIT>/.goops.yaml` file with the default settings.
+On first time invocation `gops` will create a `<GIT>/.gops.yaml` file with the default settings.
 
-`goops` will also check `<GIT>/.gitignore` to see if `.goops.yaml` is on ignore (create/modify if needed).
+`gops` will also check `<GIT>/.gitignore` to see if `.gops.yaml` is on ignore (create/modify if needed).
 
 ## What repository layout is expected?
 
-In the default settings `goops` expects a `ops/config` folder with yaml files, e.g.:
+In the default settings `gops` expects a `ops/config` folder with yaml files, e.g.:
 
 ```bash
 ./ops/config/all/all.config.yaml
@@ -45,7 +41,7 @@ prod:
   a_secret: true
 ```
 
-`goops` will try to find files names `*.template.*` and apply the Jet template engine to it to generate a new file named `*.generated.*`, e.g.:
+`gops` will try to find files names `*.template.*` and apply the Jet template engine to it to generate a new file named `*.generated.*`, e.g.:
 
 ```bash
 scripts/connect-db.template.sh --> scripts/connect-db.generated.sh`
@@ -84,7 +80,7 @@ Have `go` installed
 brew install golang
 ```
 
-Create a stub loader in the path to allow you to invoke it from everywhere. This stub will always build `goops` before invoking it.
+Create a stub loader in the path to allow you to invoke it from everywhere. This stub will always build `gops` before invoking it.
 
 ```bash
 sudo ln -s "$(pwd)/gops" /usr/local/bin/gops
@@ -96,7 +92,7 @@ You should be somewhere within a git repository for it to work.
 
 ```bash
 gops help           # Displays a command overview
-gops config         # Shows the current goops configuration
+gops config         # Shows the current gops configuration
 gops dump           # Merges yaml config files and dumps it on stdout
 gops target         # Target management, shows or sets current target
 
