@@ -55,18 +55,18 @@ func main() {
 				vm.Meta.Target = target
 				WriteGopsConfig(&vm)
 			}
+		} else {
+			logrus.Info("Available targets:")
+
+			for _, f := range files {
+				logrus.Info("- " + f.Name())
+			}
 		}
 
 		if vm.Meta.Target == "" {
 			logrus.Error("No target set..")
 		} else {
 			logrus.Info("Current target: " + vm.Meta.Target)
-		}
-
-		logrus.Info("Available targets:")
-
-		for _, f := range files {
-			logrus.Info("- " + f.Name())
 		}
 
 	case "templates":
