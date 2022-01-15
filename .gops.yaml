@@ -1,0 +1,4 @@
+ConfigDirectory: ops/config
+DelimiterLeft: '#{{'
+DelimiterRight: '}}#'
+Target: ""

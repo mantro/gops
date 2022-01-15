@@ -1,6 +1,4 @@
 gops
 dist
-.gops.yaml
 .idea
-goops
-.goops.yaml
+.gops-target.yaml

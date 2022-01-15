@@ -1,14 +1,12 @@
 package main
 
 import (
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/CloudyKit/jet/v6"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"sigs.k8s.io/yaml"
 )
 
@@ -17,11 +15,12 @@ type Dictionary = map[string]interface{}
 type Meta struct {
 	GitRoot        string
 	ConfigFilePath string
+	TargetFilePath string
+	Target         string
 }
 
 type GopsConfig struct {
 	ConfigDirectory string
-	Target          string
 	DelimiterLeft   string
 	DelimiterRight  string
 }
@@ -44,6 +43,7 @@ func CreateViewModel() (vm ViewModel) {
 	vm.Meta = Meta{}
 	vm.Meta.GitRoot = gitRoot
 	vm.Meta.ConfigFilePath = filepath.Join(gitRoot, ".gops.yaml")
+	vm.Meta.TargetFilePath = filepath.Join(gitRoot, ".gops-target.yaml")
 
 	return vm
 }
@@ -62,7 +62,6 @@ func getViperConfig() GopsConfig {
 
 	return GopsConfig{
 		ConfigDirectory: viper.GetString("ConfigDirectory"),
-		Target:          viper.GetString("Target"),
 		DelimiterLeft:   viper.GetString("DelimiterLeft"),
 		DelimiterRight:  viper.GetString("DelimiterRight"),
 	}
@@ -73,6 +72,11 @@ func WriteGopsConfig(vm *ViewModel) {
 
 	if err := os.WriteFile(vm.Meta.ConfigFilePath, output, 0644); err != nil {
 		logrus.Error("Cannot open " + vm.Meta.ConfigFilePath + " for writing")
+		panic(err)
+	}
+
+	if err := os.WriteFile(vm.Meta.TargetFilePath, []byte(vm.Meta.Target), 0644); err != nil {
+		logrus.Error("Cannot open " + vm.Meta.TargetFilePath + " for writing")
 		panic(err)
 	}
 
@@ -97,30 +101,28 @@ func LoadGopsConfig(vm *ViewModel) {
 		WriteGopsConfig(vm)
 	}
 
-	contents := ""
+	if _, err := os.Stat(vm.Meta.TargetFilePath); err == nil {
+		var contents []byte
+		if contents, err = os.ReadFile(vm.Meta.TargetFilePath); err != nil {
+			logrus.Error("Cannot read " + vm.Meta.TargetFilePath)
+			panic(err)
+		}
 
-	gitignorePath := filepath.Join(vm.Meta.GitRoot, ".gitignore")
-	if gitignore, err := os.ReadFile(gitignorePath); err != nil {
-		logrus.Warn(gitignorePath + " does not exist, creating..")
-		contents = ".gops.yaml"
-	} else {
-		contents = string(gitignore)
+		vm.Meta.Target = string(contents)
 
-		if !strings.Contains(contents, ".gops.yaml") {
-			logrus.Info("Adding '.gops.yaml' to " + gitignorePath)
-			contents = contents + "\n.gops.yaml"
+		targetPath := filepath.Join(vm.Config.ConfigDirectory, vm.Meta.Target)
+		if _, err := os.Stat(targetPath); err != nil {
+			logrus.Error("Cannot find " + targetPath)
+			vm.Meta.Target = ""
 		}
 	}
 
-	if err := os.WriteFile(gitignorePath, []byte(contents), 0644); err != nil {
-		logrus.Error("Cannot write " + gitignorePath)
-		panic(err)
-	}
+	EnsureLineInGitIgnore(vm.Meta.GitRoot, ".gops-target.yaml")
 }
 
 func LoadAndMergeConfigDirectory(vm *ViewModel) {
 
-	if vm.Config.Target == "" {
+	if vm.Meta.Target == "" {
 		logrus.Error("No target has been set, please invoke 'gops target' first")
 		os.Exit(1)
 	}
@@ -148,14 +150,14 @@ func LoadAndMergeConfigDirectory(vm *ViewModel) {
 		os.Exit(1)
 	}
 
-	if val, ok := vm.Data[vm.Config.Target]; ok {
+	if val, ok := vm.Data[vm.Meta.Target]; ok {
 		vm.Data["target"] = val
 	} else {
-		logrus.Error("Cannot find target " + vm.Config.Target + " in merged configuration")
+		logrus.Error("Cannot find target " + vm.Meta.Target + " in merged configuration")
 		os.Exit(1)
 	}
 
-	logrus.Info("Current target: " + vm.Config.Target)
+	logrus.Info("Current target: " + vm.Meta.Target)
 }
 
 func ProcessTemplates(vm *ViewModel) {

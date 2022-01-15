@@ -51,6 +51,33 @@ func LoadYamlFile(file string) (result Dictionary, err error) {
 	return yamlData, nil
 }
 
+func EnsureLineInGitIgnore(gitRoot string, line string) {
+
+	contents := ""
+
+	gitignorePath := filepath.Join(gitRoot, ".gitignore")
+
+	if gitignore, err := os.ReadFile(gitignorePath); err != nil {
+		logrus.Warn(gitignorePath + " does not exist, creating..")
+		contents = line
+	} else {
+		contents = string(gitignore)
+
+		if !strings.Contains(contents, line) {
+			logrus.Info("Adding '" + line + "' to " + gitignorePath)
+			contents = contents + "\n" + line
+		} else {
+			// nothing to do
+			return
+		}
+	}
+
+	if err := os.WriteFile(gitignorePath, []byte(contents), 0644); err != nil {
+		logrus.Error("Cannot write " + gitignorePath)
+		panic(err)
+	}
+}
+
 func LoadYamlFiles(files ...string) (result Dictionary) {
 
 	merge := Dictionary{}

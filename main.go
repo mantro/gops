@@ -52,15 +52,15 @@ func main() {
 			if !SliceContains(fileNames, target) {
 				logrus.Error("Cannot find target: " + target)
 			} else {
-				vm.Config.Target = target
+				vm.Meta.Target = target
 				WriteGopsConfig(&vm)
 			}
 		}
 
-		if vm.Config.Target == "" {
+		if vm.Meta.Target == "" {
 			logrus.Error("No target set..")
 		} else {
-			logrus.Info("Current target: " + vm.Config.Target)
+			logrus.Info("Current target: " + vm.Meta.Target)
 		}
 
 		logrus.Info("Available targets:")
