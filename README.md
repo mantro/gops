@@ -72,20 +72,6 @@ ConnectionStrings:
   Default: "Host=your-database.azure.com; Port=5432"
 ```
 
-## Installation
-
-Have `go` installed
-
-```bash
-brew install golang
-```
-
-Create a stub loader in the path to allow you to invoke it from everywhere. This stub will always build `gops` before invoking it.
-
-```bash
-sudo ln -s "$(pwd)/gops" /usr/local/bin/gops
-```
-
 ## Usage
 
 You should be somewhere within a git repository for it to work.
@@ -99,6 +85,5 @@ gops target         # Target management, shows or sets current target
 gops templates      # Generate the templates
 
 gops                # Same as 'gops templates'
-
 
 ```
