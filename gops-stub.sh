@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Find path of the script (and follow symlink if needed)
-REPO=$(cd -- "$(dirname -- "$([ -L "$SRC" ] && readlink -f "$SRC" || echo "$SRC")")" &>/dev/null && pwd)
+SRC="${BASH_SOURCE[0]}"
+REPO=$(cd -- "$(dirname -- "$([ -L "$SRC" ] && readlink "$SRC" || echo "$SRC")")" &>/dev/null && pwd)
 
 DIR="$(pwd)"
 
