@@ -34,6 +34,9 @@ func main() {
 	case "help":
 		fmt.Println("Available commands: config dump help target templates")
 
+	case "current-target":
+		fmt.Println(vm.Meta.Target)
+
 	case "target":
 
 		configDirectory := filepath.Join(vm.Meta.GitRoot, vm.Config.ConfigDirectory)
