@@ -22,6 +22,23 @@ func main() {
 	LoadGopsConfig(&vm)
 
 	switch command {
+	case "read":
+		LoadAndMergeConfigDirectory(&vm)
+		if len(args) < 2 {
+			panic("Please provide another parameter")
+		}
+
+		value, err := Get(vm, args[1])
+		if err != nil {
+			panic(err)
+		}
+
+		if value == nil {
+			fmt.Println("Not found")
+			os.Exit(1)
+		}
+
+		fmt.Println(value)
 	case "config":
 		output, _ := yaml.Marshal(vm.Config)
 		fmt.Println(string(output))
@@ -74,7 +91,7 @@ func main() {
 		}
 
 	case "templates":
-
+		logrus.Info("Current target: " + vm.Meta.Target)
 		LoadAndMergeConfigDirectory(&vm)
 		ProcessTemplates(&vm)
 

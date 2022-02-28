@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/imdario/mergo"
+	"github.com/oleiade/reflections"
 	"github.com/sirupsen/logrus"
 	"io/fs"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"sigs.k8s.io/yaml"
 	"strings"
 )
@@ -119,4 +121,48 @@ func GetGitRoot() (string, string, error) {
 	}
 
 	return strings.TrimSpace(string(path)), cwd, nil
+}
+
+func Get(obj interface{}, prop string) (interface{}, error) {
+
+	// Get the array access
+	arr := strings.Split(prop, ".")
+
+	var err error
+
+	for _, key := range arr {
+		obj, err = getProperty(obj, key)
+		if err != nil {
+			return nil, err
+		}
+		if obj == nil {
+			return nil, nil
+		}
+	}
+	return obj, nil
+}
+
+// Loop through this to get properties via dot notation
+func getProperty(obj interface{}, prop string) (interface{}, error) {
+
+	if reflect.TypeOf(obj).Kind() == reflect.Map {
+
+		val := reflect.ValueOf(obj)
+
+		valueOf := val.MapIndex(reflect.ValueOf(prop))
+
+		if valueOf == reflect.Zero(reflect.ValueOf(prop).Type()) {
+			return nil, nil
+		}
+
+		idx := val.MapIndex(reflect.ValueOf(prop))
+
+		if !idx.IsValid() {
+			return nil, nil
+		}
+		return idx.Interface(), nil
+	}
+
+	prop = strings.Title(prop)
+	return reflections.GetField(obj, prop)
 }
