@@ -34,8 +34,7 @@ func main() {
 		}
 
 		if value == nil {
-			fmt.Println("Not found")
-			os.Exit(1)
+			panic(fmt.Sprintf("Key %s not found", args[1]))
 		}
 
 		fmt.Println(value)
