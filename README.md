@@ -4,7 +4,7 @@ Opinionated tool that helps with secrets / deployments.
 
 ```console
 foo@bar:~$ brew tap mantro/gops
-foo@bar:~$ brew install gops
+foo@bar:~$ brew install mantro/gops/gops
 ```
 
 ## Development setup
